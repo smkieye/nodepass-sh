@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 
 # 当前脚本版本号
-SCRIPT_VERSION='0.0.5'
+SCRIPT_VERSION='0.0.6'
 
 
 # 环境变量用于在Debian或Ubuntu操作系统中设置非交互式（noninteractive）安装模式
 export DEBIAN_FRONTEND=noninteractive
 
 # Github 反代加速代理
-GH_PROXY='https://hub.glowp.xyz/'
+GITHUB_PROXY=('https://v6.gh-proxy.org/' 'https://gh-proxy.com/' 'https://hub.glowp.xyz/' 'https://proxy.vvvv.ee/')
 
 # 工作目录和临时目录
 TEMP_DIR='/tmp/nodepass'
@@ -20,8 +20,8 @@ mkdir -p $TEMP_DIR
 
 E[0]="\n Language:\n 1. 简体中文 (Default)\n 2. English"
 C[0]="${E[0]}"
-E[1]="1. Support installation of both stable and development versions; 2. Allow switching between versions (np -t); 3. Add IP API: icanhazip.com"
-C[1]="1. 支持稳定版和开发版的安装; 2. 支持版本间切换 (np -t); 3. 增加 IP API: icanhazip.com"
+E[1]="1. Supports three versions: stable, development, and classic; 2. Supports switching between the three versions (np -t); 3. Added GitHub proxy"
+C[1]="1. 支持稳定版、开发版和经典版三个版本; 2. 支持三个版本间切换 (np -t); 3. 增加 Github 代理"
 E[2]="The script must be run as root, you can enter sudo -i and then download and run again. Feedback: [https://github.com/NodePassProject/npsh/issues]"
 C[2]="必须以 root 方式运行脚本，可以输入 sudo -i 后重新下载运行，问题反馈:[https://github.com/NodePassProject/npsh/issues]"
 E[3]="Unsupported architecture: \$(uname -m)"
@@ -108,10 +108,10 @@ E[43]="NodePass service has been started"
 C[43]="NodePass 服务已开启"
 E[44]="Unable to get local version"
 C[44]="无法获取本地版本"
-E[45]="NodePass Local Core: Stable \$STABLE_LOCAL_VERSION Dev \$DEV_LOCAL_VERSION"
-C[45]="NodePass 本地核心: 稳定版 \$STABLE_LOCAL_VERSION 开发版 \$DEV_LOCAL_VERSION"
-E[46]="NodePass Latest Core: Stable \$STABLE_LATEST_VERSION Dev \$DEV_LATEST_VERSION"
-C[46]="NodePass 最新核心: 稳定版 \$STABLE_LATEST_VERSION 开发版 \$DEV_LATEST_VERSION"
+E[45]="NodePass Local Core: Stable \$STABLE_LOCAL_VERSION Dev \$DEV_LOCAL_VERSION LTS \$LTS_LOCAL_VERSION"
+C[45]="NodePass 本地核心: 稳定版 \$STABLE_LOCAL_VERSION 开发版 \$DEV_LOCAL_VERSION 经典版 \$LTS_LOCAL_VERSION"
+E[46]="NodePass Latest Core: Stable \$STABLE_LATEST_VERSION Dev \$DEV_LATEST_VERSION LTS \$LTS_LATEST_VERSION"
+C[46]="NodePass 最新核心: 稳定版 \$STABLE_LATEST_VERSION 开发版 \$DEV_LATEST_VERSION 经典版 \$LTS_LATEST_VERSION"
 E[47]="Current version is already the latest, no need to upgrade"
 C[47]="当前已是最新版本，不需要升级"
 E[48]="Found new version, upgrade? (y/N)"
@@ -133,7 +133,7 @@ C[55]="回滚失败，请手动检查"
 E[56]="Stop API"
 C[56]="关闭 API"
 E[57]="Create shortcuts successfully: script can be run with [ np ] command, and [ nodepass ] binary is directly executable."
-C[57]="创建快捷方式成功: 脚本可通过 [ np ] 命令运行，[ nodepass ] 二进制文件可直接执行!"
+C[57]="创建快捷方式成功: 脚本可通过 [ np ] 命令运行，[ nodepass ] 应用可直接执行!"
 E[58]="Start API"
 C[58]="开启 API"
 E[59]="NodePass is not installed. Configuration file not found"
@@ -150,9 +150,9 @@ E[64]="Failed to change API KEY"
 C[64]="API KEY 更换失败"
 E[65]="Changing NodePass API KEY..."
 C[65]="正在更换 NodePass API KEY..."
-E[66]="Current running version: Development Edition"
+E[66]="Current running version: Development Version"
 C[66]="当前运行版本为: 开发版"
-E[67]="Current running version: Stable Edition"
+E[67]="Current running version: Stable Version"
 C[67]="当前运行版本为: 稳定版"
 E[68]="Please enter the IP of the public machine (leave blank to not penetrate):"
 C[68]="如要把内网的 API 穿透到公网的 NodePass 服务端，请输入公网机器的 IP (留空则不穿透):"
@@ -186,32 +186,48 @@ E[82]="Running the service of intranet penetration on the server side:"
 C[82]="内网穿透的服务端运行:"
 E[83]="Failed to retrieve intranet penetration instance. Instance ID: \${INSTANCE\_ID}"
 C[83]="获取内网穿透实例失败，实例ID: \${INSTANCE_ID}"
-E[84]="Please select the NodePass core to run. Use [np -t] to switch after installation:\\\n 1. Stable \$STABLE_LATEST_VERSION \(yosebyte/nodepass\) - Suitable for production environments \(default\)\\\n 2. Development \$DEV_LATEST_VERSION \(NodePassProject/nodepass-core\) - Contains latest features, may be unstable"
-C[84]="请选择要运行的 NodePass 内核，安装后可使用 [np -t] 切换:\\\n 1. 稳定版 \$STABLE_LATEST_VERSION \(yosebyte/nodepass\) - 适合生产环境 \(默认\)\\\n 2. 开发版 \$DEV_LATEST_VERSION \(NodePassProject/nodepass-core\) - 包含最新功能，可能不稳定"
+E[84]="Please select the NodePass core to run. Use [np -t] to switch after installation:\\\n 1. Stable \$STABLE_LATEST_VERSION \(yosebyte/nodepass\) - Suitable for production environments \(default\)\\\n 2. Development \$DEV_LATEST_VERSION \(NodePassProject/nodepass-core\) - Contains latest features, may be unstable\\\n 3. Classic \$LTS_LATEST_VERSION \(NodePassProject/nodepass-apt\) - Long-term support version"
+C[84]="请选择要运行的 NodePass 内核，安装后可使用 [np -t] 切换:\\\n 1. 稳定版 \$STABLE_LATEST_VERSION \(yosebyte/nodepass\) - 适合生产环境 \(默认\)\\\n 2. 开发版 \$DEV_LATEST_VERSION \(NodePassProject/nodepass-core\) - 包含最新功能，可能不稳定\\\n 3. 经典版 \$LTS_LATEST_VERSION \(NodePassProject/nodepass-apt\) - 长期支持版本"
 E[85]="Getting machine IP address..."
 C[85]="获取机器 IP 地址中..."
 E[86]="Switching NodePass version..."
 C[86]="正在切换 NodePass 版本..."
-E[87]="Switched to stable version successfully"
-C[87]="已成功切换到稳定版"
-E[88]="Switched to development version successfully"
-C[88]="已成功切换到开发版"
+E[87]="Switched successfully"
+C[87]="已成功切换"
+E[88]="Please select the version to switch to (default is 3):"
+C[88]="请选择要切换到的版本 (默认为 3):"
 E[89]="NodePass version switch failed"
 C[89]="NodePass 版本切换失败"
 E[90]="URI:"
 C[90]="URI:"
-E[91]="No upgrade available for both stable and development versions"
-C[91]="稳定版和开发版均无可用更新"
+E[91]="No upgrade available for both stable, development and classic versions"
+C[91]="稳定版、开发版和经典版均无可用更新"
 E[92]="Stable version can be upgraded from \$STABLE_LOCAL_VERSION to \$STABLE_LATEST_VERSION"
 C[92]="稳定版可以从 \$STABLE_LOCAL_VERSION 升级到 \$STABLE_LATEST_VERSION"
 E[93]="Development version can be upgraded from \$DEV_LOCAL_VERSION to \$DEV_LATEST_VERSION"
 C[93]="开发版可以从 \$DEV_LOCAL_VERSION 升级到 \$DEV_LATEST_VERSION"
-E[94]="Both stable and development versions can be upgraded"
-C[94]="稳定版和开发版均有可用更新"
+E[94]="Stable, development or classic version has available updates"
+C[94]="稳定版，开发版或经典版有可用更新"
 E[95]="Switch core version"
 C[95]="切换内核版本"
 E[96]="Waiting 5 seconds before starting the service..."
 C[96]="正在等待5秒后启动服务..."
+E[97]="Current running version:"
+C[97]="当前运行版本:"
+E[98]="Current running version: Classic Version"
+C[98]="当前运行版本为: 经典版"
+E[99]="Classic version can be upgraded from \$LTS_LOCAL_VERSION to \$LTS_LATEST_VERSION"
+C[99]="经典版可以从 \$LTS_LOCAL_VERSION 升级到 \$LTS_LATEST_VERSION"
+E[100]="Switch to stable version (np-stb)"
+C[100]="切换到稳定版 (np-stb)"
+E[101]="Switch to development version (np-dev)"
+C[101]="切换到开发版 (np-dev)"
+E[102]="Switch to classic version (np-lts)"
+C[102]="切换到经典版 (np-lts)"
+E[103]="Cancel switching"
+C[103]="取消切换"
+E[104]="Please select the version to switch to (default is 3):"
+C[104]="请选择要切换到的版本 (默认为 3):"
 
 # 自定义字体彩色，read 函数
 warning() { echo -e "\033[31m\033[01m$*\033[0m"; }  # 红色
@@ -533,13 +549,14 @@ check_port() {
 
 # 检测是否需要启用 Github CDN，如能直接连通，则不使用
 check_cdn() {
-  if [ -n "$GH_PROXY" ]; then
+  for PROXY_URL in "${GITHUB_PROXY[@]}"; do
     if [ "$DOWNLOAD_TOOL" = "curl" ]; then
-      curl -ksIL --connect-timeout 3 --max-time 3 ${GH_PROXY}https://raw.githubusercontent.com/yosebyte/nodepass/refs/heads/main/README.md &>/dev/null || unset GH_PROXY
+      REMOTE_VERSION=$(curl -ksL --connect-timeout 3 --max-time 3 ${PROXY_URL}https://raw.githubusercontent.com/NodePassProject/npsh/refs/heads/main/README_EN.md 2>/dev/null | sed -nE 's/^-[ ]+(Stable|Development|LTS):/\1:/p')
     else
-      wget --server-response --quiet --output-document=/dev/null --no-check-certificate --tries=2 --timeout=3 ${GH_PROXY}https://raw.githubusercontent.com/yosebyte/nodepass/refs/heads/main/README.md &>/dev/null || unset GH_PROXY
+      REMOTE_VERSION=$(wget -qO- --no-check-certificate --tries=2 --timeout=3 ${PROXY_URL}https://raw.githubusercontent.com/NodePassProject/npsh/refs/heads/main/README_EN.md 2>/dev/null | sed -nE 's/^-[ ]+(Stable|Development|LTS):/\1:/p')
     fi
-  fi
+    grep -q 'Stable' <<< "$REMOTE_VERSION" && GH_PROXY="$PROXY_URL" && break
+  done
 }
 
 # 脚本当天及累计运行次数统计
@@ -703,51 +720,33 @@ get_random_port() {
 # 获取本地版本
 get_local_version() {
   if grep -qw 'all' <<< "$1"; then
-    DEV_LOCAL_VERSION=$(${WORK_DIR}/dev-nodepass 2>/dev/null | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+[^[:space:]]*')
-    STABLE_LOCAL_VERSION=$(${WORK_DIR}/stable-nodepass 2>/dev/null | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+[^[:space:]]*')
+    DEV_LOCAL_VERSION=$(${WORK_DIR}/np-dev 2>/dev/null | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+[^[:space:]]*')
+    STABLE_LOCAL_VERSION=$(${WORK_DIR}/np-stb 2>/dev/null | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+[^[:space:]]*')
+    LTS_LOCAL_VERSION=$(${WORK_DIR}/np-lts 2>/dev/null | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+[^[:space:]]*')
   fi
-  local GET_SYMLINK_TARGET=$(ls -l ${WORK_DIR}/nodepass 2>/dev/null | awk '{print $NF}')
-  grep -q 'dev-nodepass' <<< "$GET_SYMLINK_TARGET" && DEV_OR_STABLE=$(text 66) || DEV_OR_STABLE=$(text 67)
+  local GET_SYMLINK_TARGET=$(readlink ${WORK_DIR}/nodepass 2>/dev/null)
+  if grep -q 'np-dev' <<< "$GET_SYMLINK_TARGET"; then
+    VERSION_TYPE_TEXT=$(text 66)
+  elif grep -q 'np-stb' <<< "$GET_SYMLINK_TARGET"; then
+    VERSION_TYPE_TEXT=$(text 67)
+  elif grep -q 'np-lts' <<< "$GET_SYMLINK_TARGET"; then
+    VERSION_TYPE_TEXT=$(text 98)
+  fi
   RUNNING_LOCAL_VERSION=$(${WORK_DIR}/nodepass 2>/dev/null | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+[^[:space:]]*')
 }
 
 # 获取最新版本
 get_latest_version() {
-  if [ "$DOWNLOAD_TOOL" = "curl" ]; then
-    # 稳定版使用 latest 标签
-    STABLE_LATEST_VERSION=$(curl -sL "${GH_PROXY}https://api.github.com/repos/yosebyte/nodepass/releases/latest" | awk -F '"' '/tag_name/{print $4}')
-    # 开发版使用时间判断
-    local API_MESSAGE_DEV=$(curl -sL "${GH_PROXY}https://api.github.com/repos/NodePassProject/nodepass-core/releases" | grep -E 'published_at|tag_name')
-  else
-    # 稳定版使用 latest 标签
-    STABLE_LATEST_VERSION=$(wget -qO- "${GH_PROXY}https://api.github.com/repos/yosebyte/nodepass/releases/latest" | awk -F '"' '/tag_name/{print $4}')
-    # 开发版使用时间判断
-    local API_MESSAGE_DEV=$(wget -qO- "${GH_PROXY}https://api.github.com/repos/NodePassProject/nodepass-core/releases" | grep -E 'published_at|tag_name')
-  fi
+  STABLE_LATEST_VERSION=$(awk -F '[ ]' '/Stable/{print $NF}' <<< "$REMOTE_VERSION")
+  DEV_LATEST_VERSION=$(awk -F '[ ]' '/Development/{print $NF}' <<< "$REMOTE_VERSION")
+  LTS_LATEST_VERSION=$(awk -F '[ ]' '/LTS/{print $NF}' <<< "$REMOTE_VERSION")
 
-  # 处理开发版本
-  local PUBLISHED_AT_DEV=($(awk -F '"' '/published_at/{print $4}' <<< "$API_MESSAGE_DEV"))
-  local TAG_NAME_DEV=($(awk -F '"' '/tag_name/{print $4}' <<< "$API_MESSAGE_DEV"))
-
-  # 找到最新的开发版本
-  if [ ${#PUBLISHED_AT_DEV[@]} -gt 0 ]; then
-    local i_dev=$(echo "${PUBLISHED_AT_DEV[@]}" | tr ' ' '\n' | awk '
-        BEGIN {max="1970-01-01T00:00:00Z"; idx=0}
-        {if ($1 > max) {max=$1; idx=NR-1}}
-        END {print idx}
-    ')
-    DEV_LATEST_VERSION="${TAG_NAME_DEV[$i_dev]}"
-  else
-    DEV_LATEST_VERSION=""
-  fi
-
-  if [ -z "$STABLE_LATEST_VERSION" ] || [ "$STABLE_LATEST_VERSION" = "null" ] || [ -z "$DEV_LATEST_VERSION" ] || [ "$DEV_LATEST_VERSION" = "null" ]; then
-    error " $(text 20) "
-  fi
+  [[ -z "$STABLE_LATEST_VERSION" || -z "$DEV_LATEST_VERSION" || -z "$LTS_LATEST_VERSION" ]] && error " $(text 20) "
 
   # 去掉版本号前面的v
   STABLE_VERSION_NUM=${STABLE_LATEST_VERSION#v}
   DEV_VERSION_NUM=${DEV_LATEST_VERSION#v}
+  LTS_VERSION_NUM=${LTS_LATEST_VERSION#v}
 }
 
 # 切换 NodePass 服务状态（开启/停止）
@@ -852,6 +851,39 @@ stop_nodepass() {
   sleep 2
 }
 
+# 处理旧应用名
+compatibility_old_binary() {
+  # 检查旧文件是否存在
+  [ -f "$WORK_DIR/stable-nodepass" ] && mv "$WORK_DIR/stable-nodepass" "$WORK_DIR/np-stb"
+  [ -f "$WORK_DIR/dev-nodepass" ] && mv "$WORK_DIR/dev-nodepass" "$WORK_DIR/np-dev"
+
+  # 检查软链接指向的文件
+  if [ -L "$WORK_DIR/nodepass" ]; then
+    local CURRENT_SYMLINK=$(readlink "$WORK_DIR/nodepass")
+    # 根据软链接指向的旧文件名更新为新文件名
+    if [[ "$CURRENT_SYMLINK" == *"stable-nodepass"* ]]; then
+      ln -sf "$WORK_DIR/np-stb" "$WORK_DIR/nodepass"
+    elif [[ "$CURRENT_SYMLINK" == *"dev-nodepass"* ]]; then
+      ln -sf "$WORK_DIR/np-dev" "$WORK_DIR/nodepass"
+    fi
+  fi
+
+  # 如果缺少LTS版本，下载它
+  if [ -d $WORK_DIR ] && ! [ -f "$WORK_DIR/np-lts" ]; then
+    # 获取LTS版本信息
+    get_latest_version
+
+    if [ "$DOWNLOAD_TOOL" = "curl" ]; then
+      curl -sL "${GH_PROXY}https://github.com/NodePassProject/nodepass-apt/releases/download/${LTS_LATEST_VERSION}/nodepass-apt_${LTS_VERSION_NUM}_linux_${ARCH}.tar.gz" | tar -xz -C "$TEMP_DIR"
+    else
+      wget "${GH_PROXY}https://github.com/NodePassProject/nodepass-apt/releases/download/${LTS_LATEST_VERSION}/nodepass-apt_${LTS_VERSION_NUM}_linux_${ARCH}.tar.gz" -qO- | tar -xz -C "$TEMP_DIR"
+    fi
+
+    [ -s "$TEMP_DIR/nodepass-apt" ] && mv "$TEMP_DIR/nodepass-apt" "$WORK_DIR/np-lts" && chmod +x "$WORK_DIR/np-lts"
+    get_local_version
+  fi
+}
+
 # 升级 NodePass
 upgrade_nodepass() {
   # 获取本地版本
@@ -867,6 +899,12 @@ upgrade_nodepass() {
   local HAS_UPGRADE=0
   local HAS_STABLE_UPGRADE=0
   local HAS_DEV_UPGRADE=0
+  local HAS_LTS_UPGRADE=0
+
+  # 显示可切换的版本选项
+  local OPTION_INDEX=1
+  local AVAILABLE_INDICES=()
+
   local UPGRADE_INFO=""
 
   # 检查稳定版是否有更新
@@ -883,6 +921,13 @@ upgrade_nodepass() {
     UPGRADE_INFO+="\n $(text 93) "
   fi
 
+  # 检查经典版(LTS)是否有更新
+  if [ -n "$LTS_LOCAL_VERSION" ] && [ -n "$LTS_LATEST_VERSION" ] && [ "$LTS_LOCAL_VERSION" != "$LTS_LATEST_VERSION" ]; then
+    HAS_UPGRADE=1
+    HAS_LTS_UPGRADE=1
+    UPGRADE_INFO+="\n $(text 99) "
+  fi
+
   # 如果有更新，提示用户
   if [ "$HAS_UPGRADE" = 1 ]; then
     info " $(text 94) "
@@ -891,24 +936,27 @@ upgrade_nodepass() {
 
     if [ "${UPGRADE_CHOICE,,}" != "y" ]; then
       info " $(text 49) "
-      return 0
+      exit 0
     fi
   else
     info " $(text 91) "
-    return 0
+    exit 0
   fi
 
   # 确定是否需要重启服务
   local NEED_RESTART=0
 
-  # 如果当前运行的是稳定版，且稳定版有更新，则需要重启
-  if [ "$DEV_OR_STABLE" = "$(text 66)" ] && [ "$HAS_DEV_UPGRADE" = 1 ]; then
-    NEED_RESTART=1
   # 如果当前运行的是开发版，且开发版有更新，则需要重启
-  elif [ "$DEV_OR_STABLE" = "$(text 67)" ] && [ "$HAS_STABLE_UPGRADE" = 1 ]; then
+  if [ "$VERSION_TYPE_TEXT" = "$(text 67)" ] && [ "$HAS_STABLE_UPGRADE" = 1 ]; then
     NEED_RESTART=1
-  # 如果两个版本都有更新，则需要重启
-  elif [ "$HAS_STABLE_UPGRADE" = 1 ] && [ "$HAS_DEV_UPGRADE" = 1 ]; then
+  # 如果当前运行的是稳定版，且稳定版有更新，则需要重启
+  elif [ "$VERSION_TYPE_TEXT" = "$(text 66)" ] && [ "$HAS_DEV_UPGRADE" = 1 ]; then
+    NEED_RESTART=1
+  # 如果当前运行的是经典版，且经典版有更新，则需要重启
+  elif [ "$VERSION_TYPE_TEXT" = "$(text 98)" ] && [ "$HAS_LTS_UPGRADE" = 1 ]; then
+    NEED_RESTART=1
+  # 如果三个版本都有更新，则需要重启
+  elif [ "$HAS_STABLE_UPGRADE" = 1 ] && [ "$HAS_DEV_UPGRADE" = 1 ] && [ "$HAS_LTS_UPGRADE" = 1 ]; then
     NEED_RESTART=1
   fi
 
@@ -916,52 +964,75 @@ upgrade_nodepass() {
   [ "$NEED_RESTART" = 1 ] && stop_nodepass
 
   # 备份旧版本
-  cp "$WORK_DIR/stable-nodepass" "$WORK_DIR/stable-nodepass.old" 2>/dev/null
-  cp "$WORK_DIR/dev-nodepass" "$WORK_DIR/dev-nodepass.old" 2>/dev/null
+  [ "$HAS_STABLE_UPGRADE" = 1 ] && cp "$WORK_DIR/np-stb" "$WORK_DIR/np-stb.old" 2>/dev/null
+  [ "$HAS_DEV_UPGRADE" = 1 ] && cp "$WORK_DIR/np-dev" "$WORK_DIR/np-dev.old" 2>/dev/null
+  [ "$HAS_LTS_UPGRADE" = 1 ] && cp "$WORK_DIR/np-lts" "$WORK_DIR/np-lts.old" 2>/dev/null
 
   # 下载并解压新版本
   local DOWNLOAD_SUCCESS=1
 
   if [ "$DOWNLOAD_TOOL" = "curl" ]; then
     # 下载稳定版
-    if [ -n "$STABLE_LATEST_VERSION" ] && [ "$STABLE_LOCAL_VERSION" != "$STABLE_LATEST_VERSION" ]; then
+    if [ "$HAS_STABLE_UPGRADE" = 1 ]; then
       curl -sL "${GH_PROXY}https://github.com/yosebyte/nodepass/releases/download/${STABLE_LATEST_VERSION}/nodepass_${STABLE_VERSION_NUM}_linux_${ARCH}.tar.gz" | tar -xz -C "$TEMP_DIR"
       if [ -f "$TEMP_DIR/nodepass" ]; then
-        mv "$TEMP_DIR/nodepass" "$WORK_DIR/stable-nodepass"
-        chmod +x "$WORK_DIR/stable-nodepass"
+        mv "$TEMP_DIR/nodepass" "$WORK_DIR/np-stb"
+        chmod +x "$WORK_DIR/np-stb"
       else
         DOWNLOAD_SUCCESS=0
       fi
     fi
 
     # 下载开发版
-    if [ -n "$DEV_LATEST_VERSION" ] && [ "$DEV_LOCAL_VERSION" != "$DEV_LATEST_VERSION" ]; then
+    if [ "$HAS_DEV_UPGRADE" = 1 ]; then
       curl -sL "${GH_PROXY}https://github.com/NodePassProject/nodepass-core/releases/download/${DEV_LATEST_VERSION}/nodepass-core_${DEV_VERSION_NUM}_linux_${ARCH}.tar.gz" | tar -xz -C "$TEMP_DIR"
       if [ -f "$TEMP_DIR/nodepass-core" ]; then
-        mv "$TEMP_DIR/nodepass-core" "$WORK_DIR/dev-nodepass"
-        chmod +x "$WORK_DIR/dev-nodepass"
+        mv "$TEMP_DIR/nodepass-core" "$WORK_DIR/np-dev"
+        chmod +x "$WORK_DIR/np-dev"
+      else
+        DOWNLOAD_SUCCESS=0
+      fi
+    fi
+
+    # 下载经典版(LTS)
+    if [ "$HAS_LTS_UPGRADE" = 1 ]; then
+      curl -sL "${GH_PROXY}https://github.com/NodePassProject/nodepass-apt/releases/download/${LTS_LATEST_VERSION}/nodepass-apt_${LTS_VERSION_NUM}_linux_${ARCH}.tar.gz" | tar -xz -C "$TEMP_DIR"
+      if [ -f "$TEMP_DIR/nodepass-apt" ]; then
+        mv "$TEMP_DIR/nodepass-apt" "$WORK_DIR/np-lts"
+        chmod +x "$WORK_DIR/np-lts"
       else
         DOWNLOAD_SUCCESS=0
       fi
     fi
   else
     # 下载稳定版
-    if [ -n "$STABLE_LATEST_VERSION" ] && [ "$STABLE_LOCAL_VERSION" != "$STABLE_LATEST_VERSION" ]; then
+    if [ "$HAS_STABLE_UPGRADE" = 1 ]; then
       wget "${GH_PROXY}https://github.com/yosebyte/nodepass/releases/download/${STABLE_LATEST_VERSION}/nodepass_${STABLE_VERSION_NUM}_linux_${ARCH}.tar.gz" -qO- | tar -xz -C "$TEMP_DIR"
       if [ -f "$TEMP_DIR/nodepass" ]; then
-        mv "$TEMP_DIR/nodepass" "$WORK_DIR/stable-nodepass"
-        chmod +x "$WORK_DIR/stable-nodepass"
+        mv "$TEMP_DIR/nodepass" "$WORK_DIR/np-stb"
+        chmod +x "$WORK_DIR/np-stb"
       else
         DOWNLOAD_SUCCESS=0
       fi
     fi
 
     # 下载开发版
-    if [ -n "$DEV_LATEST_VERSION" ] && [ "$DEV_LOCAL_VERSION" != "$DEV_LATEST_VERSION" ]; then
+    if [ "$HAS_DEV_UPGRADE" = 1 ]; then
       wget "${GH_PROXY}https://github.com/NodePassProject/nodepass-core/releases/download/${DEV_LATEST_VERSION}/nodepass-core_${DEV_VERSION_NUM}_linux_${ARCH}.tar.gz" -qO- | tar -xz -C "$TEMP_DIR"
       if [ -f "$TEMP_DIR/nodepass-core" ]; then
-        mv "$TEMP_DIR/nodepass-core" "$WORK_DIR/dev-nodepass"
-        chmod +x "$WORK_DIR/dev-nodepass"
+        mv "$TEMP_DIR/nodepass-core" "$WORK_DIR/np-dev"
+        chmod +x "$WORK_DIR/np-dev"
+      else
+        DOWNLOAD_SUCCESS=0
+      fi
+    fi
+
+    # 下载经典版(LTS)
+    if [ "$HAS_LTS_UPGRADE" = 1 ]; then
+      wget "${GH_PROXY}https://github.com/NodePassProject/nodepass-apt/releases/download/${LTS_LATEST_VERSION}/nodepass-apt_${LTS_VERSION_NUM}_linux_${ARCH}.tar.gz" -qO- | tar -xz -C "$TEMP_DIR"
+      if [ -f "$TEMP_DIR/nodepass-apt" ]; then
+        mv "$TEMP_DIR/nodepass-apt" "$WORK_DIR/np-lts"
+        chmod +x "$WORK_DIR/np-lts"
       else
         DOWNLOAD_SUCCESS=0
       fi
@@ -971,8 +1042,10 @@ upgrade_nodepass() {
   if [ "$DOWNLOAD_SUCCESS" = 0 ]; then
     warning " $(text 9) "
     # 恢复旧版本
-    mv "$WORK_DIR/stable-nodepass.old" "$WORK_DIR/stable-nodepass" 2>/dev/null
-    mv "$WORK_DIR/dev-nodepass.old" "$WORK_DIR/dev-nodepass" 2>/dev/null
+    [ -s $WORK_DIR/np-stb.old ] && mv "$WORK_DIR/np-stb.old" "$WORK_DIR/np-stb" 2>/dev/null
+    [ -s $WORK_DIR/np-dev.old ] && mv "$WORK_DIR/np-dev.old" "$WORK_DIR/np-dev" 2>/dev/null
+    [ -s $WORK_DIR/np-lts.old ] && mv "$WORK_DIR/np-lts.old" "$WORK_DIR/np-lts" 2>/dev/null
+
     # 如果之前停止了服务，则重新启动
     [ "$NEED_RESTART" = 1 ] && info " $(text 54) " && start_nodepass
     return 1
@@ -985,12 +1058,13 @@ upgrade_nodepass() {
     if start_nodepass; then
       info " $(text 52) "
       # 删除备份
-      rm -f "$WORK_DIR/stable-nodepass.old" "$WORK_DIR/dev-nodepass.old"
+      rm -f "$WORK_DIR/np-stb.old" "$WORK_DIR/np-dev.old" "$WORK_DIR/np-lts.old"
     else
       warning " $(text 53) "
       # 回滚
-      mv "$WORK_DIR/stable-nodepass.old" "$WORK_DIR/stable-nodepass" 2>/dev/null
-      mv "$WORK_DIR/dev-nodepass.old" "$WORK_DIR/dev-nodepass" 2>/dev/null
+      mv "$WORK_DIR/np-stb.old" "$WORK_DIR/np-stb" 2>/dev/null
+      mv "$WORK_DIR/np-dev.old" "$WORK_DIR/np-dev" 2>/dev/null
+      mv "$WORK_DIR/np-lts.old" "$WORK_DIR/np-lts" 2>/dev/null
       if start_nodepass; then
         info " $(text 54) "
       else
@@ -1000,36 +1074,83 @@ upgrade_nodepass() {
   else
     info " $(text 52) "
     # 删除备份
-    rm -f "$WORK_DIR/stable-nodepass.old" "$WORK_DIR/dev-nodepass.old"
+    rm -f "$WORK_DIR/np-stb.old" "$WORK_DIR/np-dev.old" "$WORK_DIR/np-lts.old"
   fi
 }
 
-# 切换 NodePass 版本 (稳定版 <-> 开发版)
+# 切换 NodePass 版本 (稳定版 <-> 开发版 <-> 经典版)
 switch_nodepass_version() {
   # 检查是否已安装
-  if [ ! -f "$WORK_DIR/stable-nodepass" ] && [ ! -f "$WORK_DIR/dev-nodepass" ]; then
+  if [ ! -f "$WORK_DIR/np-stb" ] && [ ! -f "$WORK_DIR/np-dev" ] && [ ! -f "$WORK_DIR/np-lts" ]; then
     warning " $(text 59) "
     return 1
   fi
 
   info " $(text 86) "
 
-  # 获取当前使用的版本
-  local CURRENT_SYMLINK=$(ls -l ${WORK_DIR}/nodepass 2>/dev/null)
+  # 获取当前使用的版本和版本号
+  get_local_version all
+
+  # 备份当前版本链接
+  [ -L "$WORK_DIR/nodepass" ] && cp -f "$WORK_DIR/nodepass" "$WORK_DIR/nodepass.bak"
+
+  # 显示当前运行版本
+  info "\n $(text 97) $VERSION_TYPE_TEXT $RUNNING_LOCAL_VERSION"
+
+  # 根据当前版本，显示可切换的其他版本
+  # 定义版本信息数组
+  VERSION_TYPE_TEXT_ARRAY=("$(text 67)" "$(text 66)" "$(text 98)")
+  VERSION_NAMES=("stable" "development" "lts")
+  VERSION_FILES=("$WORK_DIR/np-stb" "$WORK_DIR/np-dev" "$WORK_DIR/np-lts")
+  VERSION_TEXTS=("$(text 67)" "$(text 66)" "$(text 98)")
+  VERSION_LOCAL_VERSIONS=("$STABLE_LOCAL_VERSION" "$DEV_LOCAL_VERSION" "$LTS_LOCAL_VERSION")
+  VERSION_DISPLAY_TEXTS=("$(text 100)" "$(text 101)" "$(text 102)")
+
+  # 确定当前版本索引
+  for i in "${!VERSION_TYPE_TEXT_ARRAY[@]}"; do
+    [ "$VERSION_TYPE_TEXT" = "${VERSION_TYPE_TEXT_ARRAY[$i]}" ] && CURRENT_INDEX=$i && break
+  done
+
+  # 显示可切换的版本选项
+  local OPTION_INDEX=1
+  local AVAILABLE_INDICES=()
+
+  for i in "${!VERSION_NAMES[@]}"; do
+    if [ "$i" != "$CURRENT_INDEX" ]; then
+      hint " $OPTION_INDEX. ${VERSION_DISPLAY_TEXTS[$i]} ${VERSION_LOCAL_VERSIONS[$i]}"
+      AVAILABLE_INDICES+=($i)
+      ((OPTION_INDEX++))
+    fi
+  done
+
+  hint " 3. $(text 103)"
+  reading "\n $(text 104) " SWITCH_CHOICE
+  SWITCH_CHOICE=${SWITCH_CHOICE:-3}
+
+  case "$SWITCH_CHOICE" in
+    1)
+      TARGET_INDEX=${AVAILABLE_INDICES[0]}
+      TARGET_VERSION=${VERSION_NAMES[$TARGET_INDEX]}
+      TARGET_FILE=${VERSION_FILES[$TARGET_INDEX]}
+      TARGET_TEXT=${VERSION_TEXTS[$TARGET_INDEX]}
+      ;;
+    2)
+      TARGET_INDEX=${AVAILABLE_INDICES[1]}
+      TARGET_VERSION=${VERSION_NAMES[$TARGET_INDEX]}
+      TARGET_FILE=${VERSION_FILES[$TARGET_INDEX]}
+      TARGET_TEXT=${VERSION_TEXTS[$TARGET_INDEX]}
+      ;;
+    *)
+      info " $(text 103)"
+      return 0
+      ;;
+  esac
 
   # 停止服务
   stop_nodepass
 
   # 切换版本
-  if grep -q 'dev-nodepass' <<< "$CURRENT_SYMLINK"; then
-    # 当前是开发版，切换到稳定版
-    ln -sf "$WORK_DIR/stable-nodepass" "$WORK_DIR/nodepass"
-    local SWITCHED_VERSION="stable"
-  else
-    # 当前是稳定版，切换到开发版
-    ln -sf "$WORK_DIR/dev-nodepass" "$WORK_DIR/nodepass"
-    local SWITCHED_VERSION="development"
-  fi
+  ln -sf "$TARGET_FILE" "$WORK_DIR/nodepass"
 
   # 添加5秒延迟
   info " $(text 96) " && sleep 5
@@ -1037,21 +1158,15 @@ switch_nodepass_version() {
   # 启动服务
   if start_nodepass; then
     get_local_version running
-    if [ "$SWITCHED_VERSION" = "stable" ]; then
-      info " $(text 87)\n $DEV_OR_STABLE $RUNNING_LOCAL_VERSION "
-    else
-      info " $(text 88)\n $DEV_OR_STABLE $RUNNING_LOCAL_VERSION  "
-    fi
+    info " $(text 87)\n $TARGET_TEXT $RUNNING_LOCAL_VERSION"
   else
     warning " $(text 89) "
-    # 尝试回滚
-    if [ "$SWITCHED_VERSION" = "stable" ]; then
-      ln -sf "$WORK_DIR/dev-nodepass" "$WORK_DIR/nodepass"
-    else
-      ln -sf "$WORK_DIR/stable-nodepass" "$WORK_DIR/nodepass"
-    fi
-    start_nodepass
+    # 尝试回滚到原来的版本
+    [ -f "$WORK_DIR/nodepass.bak" ] && cp -f "$WORK_DIR/nodepass.bak" "$WORK_DIR/nodepass" && start_nodepass
   fi
+
+  # 清理备份文件
+  rm -f "$WORK_DIR/nodepass.bak"
 }
 
 # 解析命令行参数
@@ -1142,10 +1257,12 @@ install() {
   if [ "$DOWNLOAD_TOOL" = "curl" ]; then
     { curl --connect-timeout 60 --max-time 60 --retry 2 -sL "${GH_PROXY}https://github.com/NodePassProject/nodepass-core/releases/download/${DEV_LATEST_VERSION}/nodepass-core_${DEV_VERSION_NUM}_linux_${ARCH}.tar.gz" | tar -xz -C "$TEMP_DIR"; } &
     { curl --connect-timeout 60 --max-time 60 --retry 2 -sL "${GH_PROXY}https://github.com/yosebyte/nodepass/releases/download/${STABLE_LATEST_VERSION}/nodepass_${STABLE_VERSION_NUM}_linux_${ARCH}.tar.gz" | tar -xz -C "$TEMP_DIR"; } &
+    { curl --connect-timeout 60 --max-time 60 --retry 2 -sL "${GH_PROXY}https://github.com/NodePassProject/nodepass-apt/releases/download/${LTS_LATEST_VERSION}/nodepass-apt_${LTS_VERSION_NUM}_linux_${ARCH}.tar.gz" | tar -xz -C "$TEMP_DIR"; } &
     { curl --connect-timeout 60 --max-time 60 --retry 2 -o "$TEMP_DIR/qrencode" "${GH_PROXY}https://github.com/fscarmen/client_template/raw/main/qrencode-go/qrencode-go-linux-$ARCH" >/dev/null 2>&1 && chmod +x "$TEMP_DIR/qrencode" >/dev/null 2>&1; } &
   else
     { wget --timeout=60 --tries=2 "${GH_PROXY}https://github.com/NodePassProject/nodepass-core/releases/download/${DEV_LATEST_VERSION}/nodepass-core_${DEV_VERSION_NUM}_linux_${ARCH}.tar.gz" -qO- | tar -xz -C "$TEMP_DIR"; } &
     { wget --timeout=60 --tries=2 "${GH_PROXY}https://github.com/yosebyte/nodepass/releases/download/${STABLE_LATEST_VERSION}/nodepass_${STABLE_VERSION_NUM}_linux_${ARCH}.tar.gz" -qO- | tar -xz -C "$TEMP_DIR"; } &
+    { wget --timeout=60 --tries=2 "${GH_PROXY}https://github.com/NodePassProject/nodepass-apt/releases/download/${LTS_LATEST_VERSION}/nodepass-apt_${LTS_VERSION_NUM}_linux_${ARCH}.tar.gz" -qO- | tar -xz -C "$TEMP_DIR"; } &
     { wget --no-check-certificate --timeout=60 --tries=2 --continue -qO "$TEMP_DIR/qrencode" "${GH_PROXY}https://github.com/fscarmen/client_template/raw/main/qrencode-go/qrencode-go-linux-$ARCH" >/dev/null 2>&1 && chmod +x "$TEMP_DIR/qrencode" >/dev/null 2>&1; } &
   fi
   rm -f $TEMP_DIR/{README.md,README_zh.md,LICENSE}
@@ -1184,9 +1301,12 @@ install() {
   fi
 
   # 询问用户选择版本类型
-  if grep -q '.' <<< "$ARGS_VERSION"; then
-    grep -qw 'dev' <<< "$ARGS_VERSION" && VERSION_TYPE_CHOICE="2"
-  fi
+  case "$VERSION_TYPE_CHOICE" in
+    dev ) VERSION_TYPE_CHOICE="2" ;;
+    lts ) VERSION_TYPE_CHOICE="3" ;;
+    stable ) VERSION_TYPE_CHOICE="1" ;;
+  esac
+
   grep -q '^$' <<< "$VERSION_TYPE_CHOICE" && hint "\n (1/5) $(text 84) \n" && reading " $(text 4) " VERSION_TYPE_CHOICE
 
   # 如果获取到 IPv4 和 IPv6，则提示用户选择
@@ -1383,14 +1503,19 @@ install() {
   [[ "$IN_CONTAINER" = 1 || "$SERVICE_MANAGE" = "none" ]] && echo -e "CMD='$CMD'" >> $WORK_DIR/data
   grep -q '.' <<< "$REMOTE_SERVER_INPUT" && grep -q '.' <<< "$REMOTE_PORT_INPUT" && local REMOTE="${REMOTE_PASSWORD_INPUT}${URL_SERVER_IP}:${URL_SERVER_PORT}" && echo -e "REMOTE=$REMOTE" >> $WORK_DIR/data
 
-  # 移动 NodePass稳定版和开发版，qrencode 可执行文件并设置权限
-  mv $TEMP_DIR/nodepass $WORK_DIR/stable-nodepass
-  mv $TEMP_DIR/nodepass-core $WORK_DIR/dev-nodepass
+  # 移动 NodePass稳定版、开发版和经典版，qrencode 可执行文件并设置权限
+  mv $TEMP_DIR/nodepass $WORK_DIR/np-stb
+  mv $TEMP_DIR/nodepass-core $WORK_DIR/np-dev
+  mv $TEMP_DIR/nodepass-apt $WORK_DIR/np-lts
   mv $TEMP_DIR/qrencode $WORK_DIR/
-  chmod +x $WORK_DIR/{*nodepass,qrencode}
+  chmod +x $WORK_DIR/{np-stb,np-dev,np-lts,qrencode}
 
   # 根据选择不同的版本类型，设置 NodePass 的可执行文件的软链接
-  [ "$VERSION_TYPE_CHOICE" = "2" ] && ln -sf "$WORK_DIR/dev-nodepass" "$WORK_DIR/nodepass" || ln -sf "$WORK_DIR/stable-nodepass" "$WORK_DIR/nodepass"
+  case "$VERSION_TYPE_CHOICE" in
+    2) ln -sf "$WORK_DIR/np-dev" "$WORK_DIR/nodepass" ;;
+    3) ln -sf "$WORK_DIR/np-lts" "$WORK_DIR/nodepass" ;;
+    *) ln -sf "$WORK_DIR/np-stb" "$WORK_DIR/nodepass" ;;
+  esac
 
   # 创建服务文件
   create_service
@@ -1800,7 +1925,7 @@ menu_setting() {
 # 菜单显示函数 - 显示菜单选项并处理用户输入
 menu() {
   # 使用 echo 和转义序列清屏
-  echo -e "\033[H\033[2J\033[3J"
+ ##### echo -e "\033[H\033[2J\033[3J"
   echo "
 ╭───────────────────────────────────────────╮
 │    ░░█▀█░█▀█░░▀█░█▀▀░█▀█░█▀█░█▀▀░█▀▀░░    │
@@ -1811,15 +1936,14 @@ menu() {
 │   >https://github.com/yosebyte/nodepass   │
 ╰───────────────────────────────────────────╯ "
 
-  grep -q '.' <<< "$DEV_LOCAL_VERSION" && grep -q '.' <<< "$STABLE_LOCAL_VERSION" && info " $(text 45) "
-  grep -q '.' <<< "$DEV_LATEST_VERSION" && grep -q '.' <<< "$STABLE_LATEST_VERSION" && info " $(text 46) "
-  grep -q '.' <<< "$RUNNING_LOCAL_VERSION" && info " $DEV_OR_STABLE $RUNNING_LOCAL_VERSION"
+  grep -q '.' <<< "$DEV_LOCAL_VERSION" && grep -q '.' <<< "$STABLE_LOCAL_VERSION" && grep -q '.' <<< "$LTS_LOCAL_VERSION" && info " $(text 45) "
+  grep -q '.' <<< "$DEV_LATEST_VERSION" && grep -q '.' <<< "$STABLE_LATEST_VERSION" && grep -q '.' <<< "$LTS_LATEST_VERSION" && info " $(text 46) "
+  grep -q '.' <<< "$RUNNING_LOCAL_VERSION" && info " $VERSION_TYPE_TEXT $RUNNING_LOCAL_VERSION"
   grep -qEw '0|1' <<< "$INSTALL_STATUS" && info " $(text 60) $NODEPASS_STATUS "
   grep -q '.' <<< "$API_URL" && info " $(text 39) $API_URL"
   grep -q '.' <<< "$KEY" && info " $(text 40) $KEY"
   grep -q '.' <<< "$SERVER_CMD" && info " $(text 82) $SERVER_CMD"
   grep -q '.' <<< "$URI" && [ -x "${WORK_DIR}/qrencode" ] && info " $(text 90) $URI"
-
   info " Version: $SCRIPT_VERSION $(text 1) "
   echo "------------------------"
 
@@ -1864,6 +1988,9 @@ main() {
 
   # 检查是否需要启用 Github CDN
   check_cdn
+
+  # 处理旧应用的兼容性
+  compatibility_old_binary
 
   # 统计脚本当天及累计使用次数
   # statistics_of_run-times update np.sh 2>/dev/null
